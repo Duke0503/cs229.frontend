@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { theme } from "../styles/theme";
 import EnhancedStage from "./EnhancedStage";
+import "./StepByStepViewer.css";
 
 export default function StepByStepViewer({ pipeline, onStepChange }) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -9,10 +10,34 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
   const autoPlayTimerRef = useRef(null);
 
   const steps = [
-    { key: "tokens", title: "1. Tokenize", data: pipeline.tokens, description: "Breaking input into tokens" },
-    { key: "parse", title: "2. Parse / Lambda", data: pipeline.parse, description: "Parsing and lambda calculus" },
-    { key: "drs", title: "3. DRS", data: pipeline.drs, description: "Discourse Representation Structure" },
-    { key: "folProver", title: "4. FOL / Prover", data: pipeline.folProver, description: "First-Order Logic & Prover" },
+    { 
+      key: "tokens", 
+      titleFull: "1. Tokenize",
+      titleShort: "1. Words",
+      data: pipeline.tokens, 
+      description: "Breaking text into words" 
+    },
+    { 
+      key: "parse", 
+      titleFull: "2. Parse / Lambda",
+      titleShort: "2. Grammar",
+      data: pipeline.parse, 
+      description: "Understanding sentence structure" 
+    },
+    { 
+      key: "drs", 
+      titleFull: "3. DRS",
+      titleShort: "3. Meaning",
+      data: pipeline.drs, 
+      description: "Extracting meaning" 
+    },
+    { 
+      key: "folProver", 
+      titleFull: "4. FOL / Prover",
+      titleShort: "4. Answer",
+      data: pipeline.folProver, 
+      description: "Finding the answer" 
+    },
   ];
 
   const currentStepData = steps[currentStep];
@@ -101,7 +126,13 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
           }}
         >
           {/* Left side - Controls */}
-          <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.xs }}>
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: theme.spacing.xs,
+            flexWrap: "wrap",
+            justifyContent: "flex-start",
+          }}>
             <button
               onClick={handlePrevious}
               disabled={currentStep === 0}
@@ -130,7 +161,7 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
                 e.currentTarget.style.boxShadow = theme.shadows.sm;
                 e.currentTarget.style.transform = "scale(1)";
               }}
-              title="Previous Step"
+              title="Previous"
             >
               ⏮
             </button>
@@ -193,7 +224,7 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
                 e.currentTarget.style.boxShadow = theme.shadows.sm;
                 e.currentTarget.style.transform = "scale(1)";
               }}
-              title="Next Step"
+              title="Next"
             >
               ⏭
             </button>
@@ -223,16 +254,23 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
                 e.currentTarget.style.boxShadow = theme.shadows.sm;
                 e.currentTarget.style.transform = "scale(1)";
               }}
-              title="Reset to Start"
+              title="Restart"
             >
               🔄
             </button>
           </div>
 
           {/* Center - Progress */}
-          <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.xs, flex: 1, minWidth: "150px" }}>
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: theme.spacing.xs, 
+            flex: 1, 
+            minWidth: "150px",
+          }}>
             <span style={{ fontSize: "12px", fontWeight: 600, color: theme.colors.neutral[700], whiteSpace: "nowrap" }}>
-              {currentStep + 1}/{steps.length}
+              <span className="progress-text-full">Step {currentStep + 1}/{steps.length}</span>
+              <span className="progress-text-short">{currentStep + 1}/{steps.length}</span>
             </span>
             <div
               style={{
@@ -254,8 +292,8 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
             </div>
           </div>
 
-          {/* Right side - Speed control */}
-          <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.xs }}>
+          {/* Right side - Speed control - Desktop only */}
+          <div className="speed-control" style={{ display: "flex", alignItems: "center", gap: theme.spacing.xs }}>
             <label style={{ fontSize: "11px", color: theme.colors.neutral[600], whiteSpace: "nowrap" }}>
               {autoPlaySpeed / 1000}s
             </label>
@@ -275,7 +313,7 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
         </div>
       </div>
 
-      {/* Step Indicator Pills - Compact */}
+      {/* Step Indicator Pills - Responsive */}
       <div
         style={{
           display: "flex",
@@ -297,16 +335,17 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
               }
             }}
             style={{
-              padding: `6px ${theme.spacing.sm}`,
+              padding: `8px ${theme.spacing.sm}`,
               borderRadius: theme.borderRadius.full,
               border: "none",
               background: currentStep === index ? theme.gradients.button : theme.colors.neutral[100],
               color: currentStep === index ? "white" : theme.colors.neutral[600],
-              fontSize: "11px",
+              fontSize: "12px",
               fontWeight: 600,
               cursor: "pointer",
               transition: "all 0.2s ease",
               boxShadow: currentStep === index ? theme.shadows.sm : "none",
+              minHeight: "40px",
             }}
             onMouseEnter={(e) => {
               if (currentStep !== index) {
@@ -319,7 +358,8 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
               }
             }}
           >
-            {step.title}
+            <span className="step-title-full">{step.titleFull}</span>
+            <span className="step-title-short">{step.titleShort}</span>
           </button>
         ))}
       </div>
@@ -340,6 +380,7 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
           }}
         >
           <h3
+            className="step-current-title"
             style={{
               margin: 0,
               fontSize: "16px",
@@ -351,9 +392,11 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
               marginBottom: "4px",
             }}
           >
-            {currentStepData.title}
+            <span className="step-title-full">{currentStepData.titleFull}</span>
+            <span className="step-title-short">{currentStepData.titleShort}</span>
           </h3>
           <p
+            className="step-description"
             style={{
               margin: 0,
               fontSize: "12px",
@@ -390,7 +433,8 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
               color: theme.colors.status.success,
             }}
           >
-            Pipeline complete!
+            <span className="completion-message-full">Analysis complete!</span>
+            <span className="completion-message-short">Done!</span>
           </span>
         </div>
       )}

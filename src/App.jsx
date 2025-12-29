@@ -6,6 +6,7 @@ import QuestionSelector from "./components/QuestionSelector";
 import StepByStepViewer from "./components/StepByStepViewer";
 import ResultPanel from "./components/ResultPanel";
 import PrettyJSON from "./components/PrettyJSON";
+import HelpPanel from "./components/HelpPanel";
 
 export default function App() {
   const [questions, setQuestions] = useState([]);
@@ -18,6 +19,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [showHelp, setShowHelp] = useState(true); // Show help by default
 
   // Load demo questions from backend
   useEffect(() => {
@@ -63,11 +65,13 @@ export default function App() {
       style={{
         minHeight: "100vh",
         background: theme.gradients.primary,
-        padding: `${theme.spacing.md} ${theme.spacing.lg}`,
+        padding: window.innerWidth > 768 
+          ? `${theme.spacing.md} ${theme.spacing.lg}` 
+          : `${theme.spacing.sm} ${theme.spacing.sm}`,
       }}
     >
       <div style={{ maxWidth: "1600px", margin: "0 auto" }}>
-        {/* Header - Compact */}
+        {/* Header - Responsive */}
         <div
           style={{
             textAlign: "center",
@@ -77,7 +81,7 @@ export default function App() {
         >
           <h1
             style={{
-              fontSize: "32px",
+              fontSize: "clamp(24px, 5vw, 32px)",
               fontWeight: 800,
               color: "white",
               marginBottom: theme.spacing.xs,
@@ -85,17 +89,54 @@ export default function App() {
               letterSpacing: "-0.5px",
             }}
           >
-            FOL Query Processor
+            🤖 Smart Question Answering
           </h1>
           <p
             style={{
-              fontSize: "14px",
+              fontSize: "clamp(12px, 2.5vw, 14px)",
               color: "rgba(255,255,255,0.9)",
               fontWeight: 500,
+              padding: "0 16px",
             }}
           >
-            Dịch câu hỏi sang First-Order Logic & Kết quả
+            Ask any question and get instant answers
           </p>
+        </div>
+
+        {/* Help Panel - Collapsible */}
+        {showHelp && (
+          <div style={{ animation: "slideUp 0.4s ease-out" }}>
+            <HelpPanel />
+          </div>
+        )}
+        
+        {/* Toggle Help Button */}
+        <div style={{ textAlign: "center", marginBottom: theme.spacing.sm }}>
+          <button
+            onClick={() => setShowHelp(!showHelp)}
+            style={{
+              padding: "8px 16px",
+              borderRadius: theme.borderRadius.full,
+              border: "none",
+              background: "rgba(255, 255, 255, 0.8)",
+              color: theme.colors.accent.purple,
+              fontSize: "12px",
+              fontWeight: 600,
+              cursor: "pointer",
+              boxShadow: theme.shadows.sm,
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 1)";
+              e.currentTarget.style.boxShadow = theme.shadows.md;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
+              e.currentTarget.style.boxShadow = theme.shadows.sm;
+            }}
+          >
+            {showHelp ? "Hide Help ▲" : "Show Help ▼"}
+          </button>
         </div>
 
         {/* Question Selector - Compact */}
@@ -134,11 +175,11 @@ export default function App() {
           </div>
         )}
 
-        {/* Main Content: Pipeline and Results Side by Side */}
+        {/* Main Content: Responsive Layout */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 400px",
+            gridTemplateColumns: window.innerWidth > 768 ? "1fr 400px" : "1fr",
             gap: theme.spacing.md,
             marginTop: theme.spacing.md,
             animation: "slideUp 0.6s ease-out 0.2s backwards",
@@ -157,7 +198,7 @@ export default function App() {
           >
             <h2
               style={{
-                fontSize: "18px",
+                fontSize: "clamp(16px, 3vw, 18px)",
                 fontWeight: 700,
                 marginBottom: theme.spacing.md,
                 background: theme.gradients.headerAccent,
@@ -166,7 +207,7 @@ export default function App() {
                 backgroundClip: "text",
               }}
             >
-              🔄 Processing Pipeline
+              {window.innerWidth > 768 ? "🔄 Processing Steps" : "🔄 Steps"}
             </h2>
             <StepByStepViewer 
               pipeline={pipeline} 
@@ -202,11 +243,11 @@ export default function App() {
                 }}
               >
                 <div style={{ fontSize: "48px", marginBottom: theme.spacing.sm }}>⏳</div>
-                <div style={{ fontSize: "14px", fontWeight: 600 }}>
-                  Processing pipeline...
+                <div style={{ fontSize: "clamp(13px, 2.5vw, 14px)", fontWeight: 600 }}>
+                  Analyzing your question...
                 </div>
-                <div style={{ fontSize: "12px", marginTop: theme.spacing.xs }}>
-                  Results will appear after step 4
+                <div style={{ fontSize: "clamp(11px, 2vw, 12px)", marginTop: theme.spacing.xs }}>
+                  Answer will appear when complete
                 </div>
               </div>
             )}
@@ -229,7 +270,7 @@ export default function App() {
                   style={{
                     marginTop: 0,
                     marginBottom: theme.spacing.sm,
-                    fontSize: "16px",
+                    fontSize: "clamp(14px, 2.5vw, 16px)",
                     fontWeight: 700,
                     background: theme.gradients.headerAccent,
                     WebkitBackgroundClip: "text",
@@ -237,7 +278,7 @@ export default function App() {
                     backgroundClip: "text",
                   }}
                 >
-                  🔍 Raw Steps
+                  🔍 Technical Details
                 </h3>
                 {steps.map((s, i) => (
                   <details

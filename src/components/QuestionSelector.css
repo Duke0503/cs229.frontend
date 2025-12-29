@@ -1,0 +1,68 @@
+/* QuestionSelector Container - Responsive Layout */
+.question-selector-container {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  flex-direction: row;
+}
+
+/* Each question section */
+.question-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 100%;
+}
+
+/* Run button default */
+.run-button {
+  min-width: 120px;
+}
+
+/* Show full text by default */
+.button-text {
+  display: inline;
+}
+
+.button-text-short {
+  display: none;
+}
+
+/* Mobile responsive - Stack vertically */
+@media (max-width: 768px) {
+  .question-selector-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .question-section {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  
+  .run-button {
+    width: 100%;
+    min-width: 100%;
+  }
+  
+  /* Show short text on mobile */
+  .button-text {
+    display: none;
+  }
+  
+  .button-text-short {
+    display: inline;
+  }
+}
+
+/* Tablet - Make sure it still looks good */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .question-selector-container {
+    flex-wrap: wrap;
+  }
+  
+  .question-section {
+    min-width: 45%;
+  }
+}

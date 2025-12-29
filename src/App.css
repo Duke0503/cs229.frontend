@@ -40,3 +40,28 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Responsive Utilities */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  #root {
+    padding: 1rem;
+  }
+}
+
+/* Touch-friendly on mobile */
+@media (max-width: 768px) {
+  button, input, select {
+    min-height: 44px !important;
+  }
+}
+

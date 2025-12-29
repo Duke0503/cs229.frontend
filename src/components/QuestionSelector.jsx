@@ -1,4 +1,5 @@
 import { theme } from "../styles/theme";
+import "./QuestionSelector.css";
 
 export default function QuestionSelector({
   questions,
@@ -23,23 +24,16 @@ export default function QuestionSelector({
         boxShadow: theme.shadows.md,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          gap: theme.spacing.sm,
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="question-selector-container">
         {/* Demo Questions Section */}
-        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, flex: "1 1 100%" }}>
+        <div className="question-section">
           <label
             style={{
               display: "flex",
               alignItems: "center",
               gap: theme.spacing.xs,
               cursor: "pointer",
-              fontSize: "15px",
+              fontSize: "clamp(14px, 2.5vw, 15px)",
               fontWeight: 600,
               color: theme.colors.neutral[700],
             }}
@@ -49,13 +43,13 @@ export default function QuestionSelector({
               checked={!useCustom}
               onChange={() => setUseCustom(false)}
               style={{
-                width: "18px",
-                height: "18px",
+                width: "20px",
+                height: "20px",
                 cursor: "pointer",
                 accentColor: theme.colors.accent.purple,
               }}
             />
-            Demo Questions
+            📚 Sample Questions
           </label>
 
           <select
@@ -67,11 +61,12 @@ export default function QuestionSelector({
               padding: theme.spacing.sm,
               borderRadius: theme.borderRadius.md,
               border: `2px solid ${theme.colors.neutral[200]}`,
-              fontSize: "14px",
+              fontSize: "clamp(13px, 2.5vw, 14px)",
               background: useCustom ? theme.colors.neutral[100] : "white",
               cursor: useCustom ? "not-allowed" : "pointer",
               transition: "all 0.2s ease",
               outline: "none",
+              minHeight: "44px",
             }}
             onFocus={(e) => {
               if (!useCustom) {
@@ -96,14 +91,14 @@ export default function QuestionSelector({
         </div>
 
         {/* Custom Question Section */}
-        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, flex: "1 1 100%" }}>
+        <div className="question-section">
           <label
             style={{
               display: "flex",
               alignItems: "center",
               gap: "8px",
               cursor: "pointer",
-              fontSize: "15px",
+              fontSize: "clamp(14px, 2.5vw, 15px)",
               fontWeight: 600,
               color: theme.colors.neutral[700],
             }}
@@ -113,30 +108,31 @@ export default function QuestionSelector({
               checked={useCustom}
               onChange={() => setUseCustom(true)}
               style={{
-                width: "18px",
-                height: "18px",
+                width: "20px",
+                height: "20px",
                 cursor: "pointer",
                 accentColor: theme.colors.accent.purple,
               }}
             />
-            Custom Question
+            ✏️ Your Question
           </label>
 
           <input
             disabled={!useCustom}
             value={customQuestion}
             onChange={(e) => setCustomQuestion(e.target.value)}
-            placeholder="Type your question… (e.g., ai sở hữu excalibur ?)"
+            placeholder="Type your question here... (e.g., Who owns Excalibur?)"
             style={{
               flex: 1,
               padding: "12px 16px",
               borderRadius: theme.borderRadius.md,
               border: `2px solid ${theme.colors.neutral[200]}`,
-              fontSize: "14px",
+              fontSize: "clamp(13px, 2.5vw, 14px)",
               background: !useCustom ? theme.colors.neutral[100] : "white",
               cursor: !useCustom ? "not-allowed" : "text",
               transition: "all 0.2s ease",
               outline: "none",
+              minHeight: "44px",
             }}
             onFocus={(e) => {
               if (useCustom) {
@@ -160,8 +156,9 @@ export default function QuestionSelector({
         <button
           onClick={onRun}
           disabled={loading || !questionToRun}
+          className="run-button"
           style={{
-            padding: "12px 32px",
+            padding: "14px 24px",
             borderRadius: theme.borderRadius.md,
             border: "none",
             background: loading || !questionToRun
@@ -169,11 +166,11 @@ export default function QuestionSelector({
               : theme.gradients.button,
             color: "white",
             fontWeight: 700,
-            fontSize: "15px",
+            fontSize: "clamp(14px, 2.5vw, 15px)",
             cursor: loading || !questionToRun ? "not-allowed" : "pointer",
             boxShadow: loading || !questionToRun ? "none" : theme.shadows.lg,
             transition: "all 0.2s ease",
-            minWidth: "120px",
+            minHeight: "48px",
           }}
           onMouseEnter={(e) => {
             if (!loading && questionToRun) {
@@ -191,10 +188,14 @@ export default function QuestionSelector({
               <span style={{ animation: "spin 1s linear infinite", display: "inline-block" }}>
                 ⟳
               </span>
-              Running…
+              <span className="button-text">Processing...</span>
+              <span className="button-text-short">Wait...</span>
             </span>
           ) : (
-            "Run Query"
+            <span style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "center" }}>
+              🚀 <span className="button-text">Get Answer</span>
+              <span className="button-text-short">Go</span>
+            </span>
           )}
         </button>
       </div>

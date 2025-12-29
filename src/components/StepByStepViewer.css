@@ -1,0 +1,73 @@
+/* StepByStepViewer - Mobile Responsive Styles */
+
+/* Hide full step titles on mobile, show short ones */
+.step-title-full {
+  display: inline;
+}
+
+.step-title-short {
+  display: none;
+}
+
+/* Progress text */
+.progress-text-full {
+  display: inline;
+}
+
+.progress-text-short {
+  display: none;
+}
+
+/* Completion message */
+.completion-message-full {
+  display: inline;
+}
+
+.completion-message-short {
+  display: none;
+}
+
+/* Mobile breakpoint */
+@media (max-width: 768px) {
+  /* Show short titles, hide long ones */
+  .step-title-full {
+    display: none;
+  }
+  
+  .step-title-short {
+    display: inline;
+  }
+  
+  /* Show short progress text */
+  .progress-text-full {
+    display: none;
+  }
+  
+  .progress-text-short {
+    display: inline;
+  }
+  
+  /* Show short completion message */
+  .completion-message-full {
+    display: none;
+  }
+  
+  .completion-message-short {
+    display: inline;
+  }
+  
+  /* Hide speed control on mobile */
+  .speed-control {
+    display: none !important;
+  }
+  
+  /* Make step description text smaller */
+  .step-description {
+    font-size: 11px !important;
+  }
+  
+  /* Make step title smaller */
+  .step-current-title {
+    font-size: 15px !important;
+  }
+}
