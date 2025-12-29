@@ -5,7 +5,7 @@ import "./StepByStepViewer.css";
 
 export default function StepByStepViewer({ pipeline, onStepChange }) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false); // Don't auto-play initially
   const [autoPlaySpeed, setAutoPlaySpeed] = useState(3000); // 3 seconds
   const autoPlayTimerRef = useRef(null);
 
@@ -42,9 +42,12 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
 
   const currentStepData = steps[currentStep];
 
-  // Auto-play logic
+  // Auto-play logic - only if there's data
   useEffect(() => {
-    if (isPlaying && currentStep < steps.length - 1) {
+    // Check if pipeline has any data
+    const hasData = pipeline.tokens || pipeline.parse || pipeline.drs || pipeline.folProver;
+    
+    if (hasData && isPlaying && currentStep < steps.length - 1) {
       autoPlayTimerRef.current = setTimeout(() => {
         setCurrentStep((prev) => {
           const nextStep = prev + 1;
@@ -62,18 +65,23 @@ export default function StepByStepViewer({ pipeline, onStepChange }) {
         clearTimeout(autoPlayTimerRef.current);
       }
     };
-  }, [isPlaying, currentStep, autoPlaySpeed, steps.length, onStepChange]);
+  }, [isPlaying, currentStep, autoPlaySpeed, steps.length, onStepChange, pipeline]);
 
-  // Reset to first step when pipeline changes
+  // Reset to first step and start playing when pipeline changes with data
   const prevPipelineRef = useRef(pipeline);
   useEffect(() => {
     if (prevPipelineRef.current !== pipeline) {
       prevPipelineRef.current = pipeline;
-      const timer = setTimeout(() => {
-        setCurrentStep(0);
-        setIsPlaying(true);
-      }, 0);
-      return () => clearTimeout(timer);
+      // Check if new pipeline has data
+      const hasData = pipeline.tokens || pipeline.parse || pipeline.drs || pipeline.folProver;
+      
+      if (hasData) {
+        const timer = setTimeout(() => {
+          setCurrentStep(0);
+          setIsPlaying(true); // Start auto-play only when there's data
+        }, 0);
+        return () => clearTimeout(timer);
+      }
     }
   }, [pipeline]);
 
