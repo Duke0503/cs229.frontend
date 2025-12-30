@@ -19,17 +19,23 @@ const antdTheme = {
     colorInfo: "#3b82f6",
     borderRadius: 8,
     fontSize: 14,
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif",
+    lineHeight: 1.6,
   },
   components: {
     Select: {
       controlHeight: 48,
       fontSize: 14,
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif",
+      optionFontSize: 14,
+      optionLineHeight: 1.6,
+      optionPadding: "10px 12px",
     },
     Button: {
       controlHeight: 48,
       fontSize: 15,
       fontWeight: 600,
+      fontFamily: "'Inter', sans-serif",
     },
   },
 };
@@ -53,7 +59,7 @@ export default function App() {
         "Kẻ thù tấn công Camelot phải không?",
         "Tiên Nữ là bạn Arthur phải không?",
         "Smaug là kẻ thù phải không?",
-        "Excalibur là thanh kiếm phải không?"
+        "Excalibur là kiếm phải không?"
       ]
     },
     {
