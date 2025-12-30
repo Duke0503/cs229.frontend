@@ -59,8 +59,8 @@ export default function App() {
         "Kẻ thù tấn công Camelot phải không?",
         "Tiên Nữ là bạn Arthur phải không?",
         "Smaug là kẻ thù phải không?",
-        "Excalibur là kiếm phải không?"
-      ]
+        "Excalibur là kiếm phải không?",
+      ],
     },
     {
       name: "Nhóm Câu hỏi Who",
@@ -69,15 +69,13 @@ export default function App() {
         "Ai tấn công Camelot?",
         "Ai trao Excalibur cho Arthur?",
         "Ai là bạn của Arthur?",
-        "Ai sở hữu Excalibur?"
-      ]
+        "Ai sở hữu Excalibur?",
+      ],
     },
     {
       name: "Nhóm Câu hỏi What",
-      questions: [
-        "Tiên Nữ trao cái gì cho Arthur?"
-      ]
-    }
+      questions: ["Tiên Nữ trao cái gì cho Arthur?"],
+    },
   ];
 
   // Set first question as default
