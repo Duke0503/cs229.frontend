@@ -8,8 +8,18 @@ export function buildPipelineView(steps) {
     parse: findStep(steps, "parse"),
     drs: findStep(steps, "dịch") || findStep(steps, "dịch_FOL"),
     folProver:
-      findStep(steps, "wh_query") || findStep(steps, "yn_query") || null,
+      findStep(steps, "wh_query") ||
+      findStep(steps, "yn_query") ||
+      findStep(steps, "wh_query_pattern_1") ||
+      findStep(steps, "yn_query_pattern_1") ||
+      findStep(steps, "logic") ||
+      findStep(steps, "prover") ||
+      null,
     resultRaw:
-      findStep(steps, "wh_result") || findStep(steps, "yn_result") || null,
+      findStep(steps, "wh_result") ||
+      findStep(steps, "yn_result") ||
+      findStep(steps, "wh_result_pattern_1") ||
+      findStep(steps, "yn_result_pattern_1") ||
+      null,
   };
 }
