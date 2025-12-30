@@ -2,12 +2,41 @@ import { useState } from "react";
 import { theme } from "../styles/theme";
 import PrettyJSON from "./PrettyJSON";
 import TreeVisualizer from "./TreeVisualizer";
+import LambdaFormatter from "./LambdaFormatter";
 
 export default function EnhancedStage({ title, data }) {
-  const [viewMode, setViewMode] = useState("tree"); // 'tree' or 'json'
+  const [viewMode, setViewMode] = useState("lambda"); // 'lambda', 'tree', or 'json'
 
-  // Check if data is complex enough to benefit from tree view
+  // Helper recursive function to check for functor/args patterns
+  const hasLambdaStructure = (obj, depth = 0) => {
+    if (depth > 5 || !obj) return false; // Prevent infinite recursion
+    
+    if (typeof obj === "object") {
+      // Check if current object has functor or T keys
+      if ("functor" in obj || "args" in obj) return true;
+      
+      // Check T key which contains the lambda structure
+      if ("T" in obj) return hasLambdaStructure(obj.T, depth + 1);
+      
+      // Recursively check all values
+      for (const key in obj) {
+        if (hasLambdaStructure(obj[key], depth + 1)) return true;
+      }
+      
+      // Check arrays
+      if (Array.isArray(obj)) {
+        return obj.some(item => hasLambdaStructure(item, depth + 1));
+      }
+    }
+    return false;
+  };
+
+  // Check if data is complex enough to benefit from special views
   const isComplexData = data && typeof data === "object";
+  
+  // Check if data is a lambda/DRS structure
+  const isLambdaStructure = hasLambdaStructure(data);
+
 
   return (
     <div
@@ -38,6 +67,8 @@ export default function EnhancedStage({ title, data }) {
           alignItems: "center",
           justifyContent: "space-between",
           marginBottom: "12px",
+          flexWrap: "wrap",
+          gap: "8px",
         }}
       >
         <div
@@ -63,10 +94,33 @@ export default function EnhancedStage({ title, data }) {
               padding: "2px",
             }}
           >
+            {isLambdaStructure && (
+              <button
+                onClick={() => setViewMode("lambda")}
+                title="Lambda Calculus view"
+                style={{
+                  padding: "4px 8px",
+                  border: "none",
+                  background:
+                    viewMode === "lambda"
+                      ? theme.gradients.button
+                      : "transparent",
+                  color: viewMode === "lambda" ? "white" : theme.colors.neutral[600],
+                  borderRadius: theme.borderRadius.sm,
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                λ
+              </button>
+            )}
             <button
               onClick={() => setViewMode("tree")}
+              title="Tree view"
               style={{
-                padding: "4px 10px",
+                padding: "4px 8px",
                 border: "none",
                 background:
                   viewMode === "tree"
@@ -80,12 +134,13 @@ export default function EnhancedStage({ title, data }) {
                 transition: "all 0.2s ease",
               }}
             >
-              🌳 Tree
+              🌳
             </button>
             <button
               onClick={() => setViewMode("json")}
+              title="JSON view"
               style={{
-                padding: "4px 10px",
+                padding: "4px 8px",
                 border: "none",
                 background:
                   viewMode === "json"
@@ -99,7 +154,7 @@ export default function EnhancedStage({ title, data }) {
                 transition: "all 0.2s ease",
               }}
             >
-              {"{}"} JSON
+              {"{}"}
             </button>
           </div>
         )}
@@ -117,6 +172,8 @@ export default function EnhancedStage({ title, data }) {
         >
           No data yet
         </div>
+      ) : viewMode === "lambda" && isLambdaStructure ? (
+        <LambdaFormatter data={data} />
       ) : viewMode === "tree" && isComplexData ? (
         <TreeVisualizer data={data} />
       ) : (

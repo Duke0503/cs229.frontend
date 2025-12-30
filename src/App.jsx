@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { ConfigProvider } from "antd";
 import { theme } from "./styles/theme";
-import { fetchQuestions, runQuery } from "./utils/api";
+import { runQuery } from "./utils/api";
 import { buildPipelineView } from "./utils/pipelineHelpers";
 import QuestionSelector from "./components/QuestionSelector";
 import StepByStepViewer from "./components/StepByStepViewer";
@@ -8,12 +9,33 @@ import ResultPanel from "./components/ResultPanel";
 import PrettyJSON from "./components/PrettyJSON";
 import HelpPanel from "./components/HelpPanel";
 
-export default function App() {
-  const [questions, setQuestions] = useState([]);
-  const [selected, setSelected] = useState("");
-  const [customQuestion, setCustomQuestion] = useState("");
-  const [useCustom, setUseCustom] = useState(false);
+// Ant Design theme configuration
+const antdTheme = {
+  token: {
+    colorPrimary: "#8b5cf6",
+    colorSuccess: "#10b981",
+    colorWarning: "#f59e0b",
+    colorError: "#ef4444",
+    colorInfo: "#3b82f6",
+    borderRadius: 8,
+    fontSize: 14,
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+  },
+  components: {
+    Select: {
+      controlHeight: 48,
+      fontSize: 14,
+    },
+    Button: {
+      controlHeight: 48,
+      fontSize: 15,
+      fontWeight: 600,
+    },
+  },
+};
 
+export default function App() {
+  const [selected, setSelected] = useState("");
   const [answer, setAnswer] = useState("");
   const [steps, setSteps] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,20 +43,45 @@ export default function App() {
   const [showResults, setShowResults] = useState(false);
   const [showHelp, setShowHelp] = useState(true); // Show help by default
 
-  // Load demo questions from backend
+  // Predefined question groups
+  const questionGroups = [
+    {
+      name: "Nhóm Câu hỏi Yes/No",
+      questions: [
+        "Smaug là rồng phải không?",
+        "Arthur là hiệp sĩ phải không?",
+        "Kẻ thù tấn công Camelot phải không?",
+        "Tiên Nữ là bạn Arthur phải không?",
+        "Smaug là kẻ thù phải không?",
+        "Excalibur là thanh kiếm phải không?"
+      ]
+    },
+    {
+      name: "Nhóm Câu hỏi Who",
+      questions: [
+        "Ai bảo vệ Camelot?",
+        "Ai tấn công Camelot?",
+        "Ai trao Excalibur cho Arthur?",
+        "Ai là bạn của Arthur?",
+        "Ai sở hữu Excalibur?"
+      ]
+    },
+    {
+      name: "Nhóm Câu hỏi What",
+      questions: [
+        "Tiên Nữ trao cái gì cho Arthur?"
+      ]
+    }
+  ];
+
+  // Set first question as default
   useEffect(() => {
-    fetchQuestions().then((data) => {
-      setQuestions(data);
-      if (data?.length) {
-        setSelected(data[0].text);
-      }
-    });
+    setSelected("Smaug là rồng phải không?");
   }, []);
 
   const questionToRun = useMemo(() => {
-    if (useCustom) return customQuestion.trim();
     return selected.trim();
-  }, [useCustom, customQuestion, selected]);
+  }, [selected]);
 
   const pipeline = useMemo(() => buildPipelineView(steps), [steps]);
 
@@ -61,11 +108,12 @@ export default function App() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: theme.gradients.primary,
-        padding: window.innerWidth > 768 
+    <ConfigProvider theme={antdTheme}>
+      <div
+        style={{
+          minHeight: "100vh",
+          background: theme.gradients.primary,
+          padding: window.innerWidth > 768 
           ? `${theme.spacing.md} ${theme.spacing.lg}` 
           : `${theme.spacing.sm} ${theme.spacing.sm}`,
       }}
@@ -142,13 +190,9 @@ export default function App() {
         {/* Question Selector - Compact */}
         <div style={{ animation: "slideUp 0.6s ease-out 0.1s backwards" }}>
           <QuestionSelector
-            questions={questions}
+            questionGroups={questionGroups}
             selected={selected}
             setSelected={setSelected}
-            customQuestion={customQuestion}
-            setCustomQuestion={setCustomQuestion}
-            useCustom={useCustom}
-            setUseCustom={setUseCustom}
             onRun={run}
             loading={loading}
             questionToRun={questionToRun}
@@ -179,7 +223,11 @@ export default function App() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: window.innerWidth > 768 ? "1fr 400px" : "1fr",
+            gridTemplateColumns: window.innerWidth > 1200 
+              ? "minmax(0, 1fr) minmax(350px, 450px)" 
+              : window.innerWidth > 768 
+                ? "1fr" 
+                : "1fr",
             gap: theme.spacing.md,
             marginTop: theme.spacing.md,
             animation: "slideUp 0.6s ease-out 0.2s backwards",
@@ -319,6 +367,7 @@ export default function App() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </ConfigProvider>
   );
 }

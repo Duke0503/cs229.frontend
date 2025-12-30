@@ -1,68 +1,63 @@
 /* QuestionSelector Container - Responsive Layout */
 .question-selector-container {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  align-items: stretch;
-  flex-direction: row;
-}
-
-/* Each question section */
-.question-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1 1 100%;
-}
-
-/* Run button default */
-.run-button {
-  min-width: 120px;
 }
 
 /* Show full text by default */
-.button-text {
+.button-text,
+.tab-label-full {
   display: inline;
 }
 
-.button-text-short {
+.button-text-short,
+.tab-label-short {
   display: none;
 }
 
-/* Mobile responsive - Stack vertically */
+/* Scrollbar styling for question list */
+.question-selector-container > div:nth-child(3)::-webkit-scrollbar {
+  width: 6px;
+}
+
+.question-selector-container > div:nth-child(3)::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.question-selector-container > div:nth-child(3)::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 10px;
+}
+
+.question-selector-container > div:nth-child(3)::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.5);
+}
+
+/* Mobile responsive */
 @media (max-width: 768px) {
-  .question-selector-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .question-section {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-  }
-  
-  .run-button {
-    width: 100%;
-    min-width: 100%;
-  }
-  
   /* Show short text on mobile */
-  .button-text {
+  .button-text,
+  .tab-label-full {
     display: none;
   }
   
-  .button-text-short {
+  .button-text-short,
+  .tab-label-short {
     display: inline;
   }
 }
 
-/* Tablet - Make sure it still looks good */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .question-selector-container {
-    flex-wrap: wrap;
-  }
-  
-  .question-section {
-    min-width: 45%;
-  }
+/* Smooth transitions */
+.question-selector-container button,
+.question-selector-container div[style*="cursor: pointer"] {
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Focus styles for accessibility */
+.run-button:focus-visible {
+  outline: 3px solid rgba(124, 58, 237, 0.5);
+  outline-offset: 2px;
 }

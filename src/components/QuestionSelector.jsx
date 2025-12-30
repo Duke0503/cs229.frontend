@@ -1,203 +1,205 @@
-import { theme } from "../styles/theme";
+import { useState } from "react";
+import { Select, Button, Tag, Space } from "antd";
+import { RocketOutlined, CheckCircleOutlined, UserOutlined, QuestionCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import "./QuestionSelector.css";
 
 export default function QuestionSelector({
-  questions,
+  questionGroups,
   selected,
   setSelected,
-  customQuestion,
-  setCustomQuestion,
-  useCustom,
-  setUseCustom,
   onRun,
   loading,
   questionToRun,
 }) {
+  const [activeGroup, setActiveGroup] = useState(0);
+
+  const groupConfigs = {
+    0: { 
+      icon: <CheckCircleOutlined />, 
+      color: '#8b5cf6',
+      label: 'Yes/No',
+      bgColor: '#f5f3ff'
+    },
+    1: { 
+      icon: <UserOutlined />, 
+      color: '#3b82f6',
+      label: 'Who',
+      bgColor: '#eff6ff'
+    },
+    2: { 
+      icon: <QuestionCircleOutlined />, 
+      color: '#ec4899',
+      label: 'What',
+      bgColor: '#fdf2f8'
+    }
+  };
+
+  const handleGroupChange = (index) => {
+    setActiveGroup(index);
+    if (questionGroups[index]?.questions?.[0]) {
+      setSelected(questionGroups[index].questions[0]);
+    }
+  };
+
+  const selectOptions = questionGroups[activeGroup]?.questions.map((question) => ({
+    value: question,
+    label: question,
+  })) || [];
+
   return (
     <div
       style={{
-        background: "rgba(255, 255, 255, 0.9)",
+        background: "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%)",
         backdropFilter: "blur(20px)",
-        padding: theme.spacing.md,
-        borderRadius: theme.borderRadius.md,
-        border: `1px solid ${theme.colors.neutral[200]}`,
-        boxShadow: theme.shadows.md,
+        padding: "20px",
+        borderRadius: "12px",
+        border: "1px solid rgba(229, 231, 235, 0.8)",
+        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
       }}
     >
       <div className="question-selector-container">
-        {/* Demo Questions Section */}
-        <div className="question-section">
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: theme.spacing.xs,
-              cursor: "pointer",
-              fontSize: "clamp(14px, 2.5vw, 15px)",
-              fontWeight: 600,
-              color: theme.colors.neutral[700],
-            }}
-          >
-            <input
-              type="radio"
-              checked={!useCustom}
-              onChange={() => setUseCustom(false)}
-              style={{
-                width: "20px",
-                height: "20px",
-                cursor: "pointer",
-                accentColor: theme.colors.accent.purple,
-              }}
-            />
-            📚 Sample Questions
-          </label>
-
-          <select
-            disabled={useCustom}
-            value={selected}
-            onChange={(e) => setSelected(e.target.value)}
-            style={{
-              flex: 1,
-              padding: theme.spacing.sm,
-              borderRadius: theme.borderRadius.md,
-              border: `2px solid ${theme.colors.neutral[200]}`,
-              fontSize: "clamp(13px, 2.5vw, 14px)",
-              background: useCustom ? theme.colors.neutral[100] : "white",
-              cursor: useCustom ? "not-allowed" : "pointer",
-              transition: "all 0.2s ease",
-              outline: "none",
-              minHeight: "44px",
-            }}
-            onFocus={(e) => {
-              if (!useCustom) {
-                e.target.style.borderColor = theme.colors.accent.purple;
-                e.target.style.boxShadow = `0 0 0 3px rgba(124, 58, 237, 0.1)`;
-              }
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = theme.colors.neutral[200];
-              e.target.style.boxShadow = "none";
-            }}
-          >
-            {questions.map((q) => (
-              <option key={q.id} value={q.text}>
-                {q.text}
-              </option>
-            ))}
-            {questions.length === 0 && (
-              <option value="">(No questions available)</option>
-            )}
-          </select>
+        {/* Compact Category Pills */}
+        <div style={{ 
+          display: "flex",
+          gap: "8px",
+          marginBottom: "16px",
+          justifyContent: "center",
+        }}>
+          {questionGroups.map((group, index) => {
+            const config = groupConfigs[index];
+            const isActive = activeGroup === index;
+            
+            return (
+              <button
+                key={index}
+                onClick={() => handleGroupChange(index)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: "20px",
+                  border: isActive 
+                    ? `2px solid ${config.color}`
+                    : "2px solid transparent",
+                  background: isActive 
+                    ? config.bgColor
+                    : "#f9fafb",
+                  color: isActive ? config.color : "#6b7280",
+                  fontSize: "13px",
+                  fontWeight: isActive ? 700 : 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  boxShadow: isActive 
+                    ? `0 2px 4px ${config.color}30`
+                    : "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = config.bgColor;
+                    e.currentTarget.style.borderColor = config.color;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = "#f9fafb";
+                    e.currentTarget.style.borderColor = "transparent";
+                  }
+                }}
+              >
+                <span style={{ fontSize: "14px" }}>{config.icon}</span>
+                <span>{config.label}</span>
+                <Tag 
+                  color={isActive ? config.color : "default"}
+                  style={{
+                    margin: 0,
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    borderRadius: "8px",
+                    padding: "0 6px",
+                    height: "18px",
+                    lineHeight: "18px",
+                  }}
+                >
+                  {group.questions.length}
+                </Tag>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Custom Question Section */}
-        <div className="question-section">
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              cursor: "pointer",
-              fontSize: "clamp(14px, 2.5vw, 15px)",
-              fontWeight: 600,
-              color: theme.colors.neutral[700],
-            }}
-          >
-            <input
-              type="radio"
-              checked={useCustom}
-              onChange={() => setUseCustom(true)}
-              style={{
-                width: "20px",
-                height: "20px",
-                cursor: "pointer",
-                accentColor: theme.colors.accent.purple,
-              }}
-            />
-            ✏️ Your Question
-          </label>
-
-          <input
-            disabled={!useCustom}
-            value={customQuestion}
-            onChange={(e) => setCustomQuestion(e.target.value)}
-            placeholder="Type your question here... (e.g., Who owns Excalibur?)"
+        {/* Select + Button Row */}
+        <Space.Compact style={{ width: "100%", display: "flex" }}>
+          <Select
+            value={selected}
+            onChange={setSelected}
+            options={selectOptions}
+            size="large"
             style={{
               flex: 1,
-              padding: "12px 16px",
-              borderRadius: theme.borderRadius.md,
-              border: `2px solid ${theme.colors.neutral[200]}`,
-              fontSize: "clamp(13px, 2.5vw, 14px)",
-              background: !useCustom ? theme.colors.neutral[100] : "white",
-              cursor: !useCustom ? "not-allowed" : "text",
-              transition: "all 0.2s ease",
-              outline: "none",
-              minHeight: "44px",
             }}
-            onFocus={(e) => {
-              if (useCustom) {
-                e.target.style.borderColor = theme.colors.accent.purple;
-                e.target.style.boxShadow = `0 0 0 3px rgba(124, 58, 237, 0.1)`;
-              }
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = theme.colors.neutral[200];
-              e.target.style.boxShadow = "none";
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !loading && questionToRun) {
-                onRun();
-              }
+            placeholder="Select a question..."
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            popupMatchSelectWidth={false}
+            dropdownStyle={{
+              minWidth: "400px",
+              maxWidth: "600px",
             }}
           />
-        </div>
 
-        {/* Run Button */}
-        <button
-          onClick={onRun}
-          disabled={loading || !questionToRun}
-          className="run-button"
-          style={{
-            padding: "14px 24px",
-            borderRadius: theme.borderRadius.md,
-            border: "none",
-            background: loading || !questionToRun
-              ? theme.colors.neutral[300]
-              : theme.gradients.button,
-            color: "white",
-            fontWeight: 700,
-            fontSize: "clamp(14px, 2.5vw, 15px)",
-            cursor: loading || !questionToRun ? "not-allowed" : "pointer",
-            boxShadow: loading || !questionToRun ? "none" : theme.shadows.lg,
-            transition: "all 0.2s ease",
-            minHeight: "48px",
-          }}
-          onMouseEnter={(e) => {
-            if (!loading && questionToRun) {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = theme.shadows.xl;
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = theme.shadows.lg;
-          }}
-        >
-          {loading ? (
-            <span style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "center" }}>
-              <span style={{ animation: "spin 1s linear infinite", display: "inline-block" }}>
-                ⟳
-              </span>
-              <span className="button-text">Processing...</span>
-              <span className="button-text-short">Wait...</span>
+          <Button
+            type="primary"
+            size="large"
+            icon={loading ? <LoadingOutlined spin /> : <RocketOutlined />}
+            onClick={onRun}
+            disabled={loading || !questionToRun}
+            loading={loading}
+            style={{
+              minWidth: "120px",
+              height: "48px",
+              fontWeight: 700,
+              fontSize: "14px",
+              background: loading || !questionToRun
+                ? undefined
+                : "linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)",
+              border: "none",
+              boxShadow: loading || !questionToRun
+                ? undefined
+                : "0 4px 6px -1px rgba(139, 92, 246, 0.3)",
+            }}
+          >
+            <span className="button-text">
+              {loading ? "Processing..." : "Go"}
             </span>
-          ) : (
-            <span style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "center" }}>
-              🚀 <span className="button-text">Get Answer</span>
-              <span className="button-text-short">Go</span>
+            <span className="button-text-short">
+              {loading ? "..." : "Go"}
             </span>
-          )}
-        </button>
+          </Button>
+        </Space.Compact>
+
+        {/* Compact Selected Preview */}
+        {selected && (
+          <div style={{
+            marginTop: "12px",
+            padding: "10px 12px",
+            background: groupConfigs[activeGroup].bgColor,
+            borderLeft: `3px solid ${groupConfigs[activeGroup].color}`,
+            borderRadius: "6px",
+            fontSize: "12px",
+            color: "#4b5563",
+            lineHeight: "1.5",
+          }}>
+            <span style={{ fontWeight: 600, color: "#9ca3af", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Selected:
+            </span>
+            <div style={{ marginTop: "2px", fontWeight: 500, color: "#1f2937" }}>
+              {selected}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
