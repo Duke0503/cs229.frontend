@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Select, Button, Tag, Space } from "antd";
-import { RocketOutlined, CheckCircleOutlined, UserOutlined, QuestionCircleOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Select, Button, Tag, Space, Input } from "antd";
+import { RocketOutlined, CheckCircleOutlined, UserOutlined, QuestionCircleOutlined, LoadingOutlined, EditOutlined } from '@ant-design/icons';
 import "./QuestionSelector.css";
 
 export default function QuestionSelector({
   questionGroups,
   selected,
   setSelected,
+  customQuestion,
+  setCustomQuestion,
   onRun,
   loading,
   questionToRun,
@@ -31,13 +33,24 @@ export default function QuestionSelector({
       color: '#ec4899',
       label: 'What',
       bgColor: '#fdf2f8'
+    },
+    3: {
+      icon: <EditOutlined />,
+      color: '#10b981',
+      label: 'Custom',
+      bgColor: '#f0fdf4'
     }
   };
 
   const handleGroupChange = (index) => {
     setActiveGroup(index);
-    if (questionGroups[index]?.questions?.[0]) {
+    if (questionGroups[index]?.isCustom) {
+      // Clear selected when switching to custom
+      setSelected("");
+    } else if (questionGroups[index]?.questions?.[0]) {
       setSelected(questionGroups[index].questions[0]);
+      // Clear custom question when switching away from custom
+      setCustomQuestion("");
     }
   };
 
@@ -45,6 +58,8 @@ export default function QuestionSelector({
     value: question,
     label: question,
   })) || [];
+
+  const isCustomMode = questionGroups[activeGroup]?.isCustom;
 
   return (
     <div
@@ -64,6 +79,7 @@ export default function QuestionSelector({
           gap: "8px",
           marginBottom: "16px",
           justifyContent: "center",
+          flexWrap: "wrap",
         }}>
           {questionGroups.map((group, index) => {
             const config = groupConfigs[index];
@@ -109,46 +125,64 @@ export default function QuestionSelector({
               >
                 <span style={{ fontSize: "14px" }}>{config.icon}</span>
                 <span>{config.label}</span>
-                <Tag 
-                  color={isActive ? config.color : "default"}
-                  style={{
-                    margin: 0,
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    borderRadius: "8px",
-                    padding: "0 6px",
-                    height: "18px",
-                    lineHeight: "18px",
-                  }}
-                >
-                  {group.questions.length}
-                </Tag>
+                {!group.isCustom && (
+                  <Tag 
+                    color={isActive ? config.color : "default"}
+                    style={{
+                      margin: 0,
+                      fontSize: "10px",
+                      fontWeight: 600,
+                      borderRadius: "8px",
+                      padding: "0 6px",
+                      height: "18px",
+                      lineHeight: "18px",
+                    }}
+                  >
+                    {group.questions.length}
+                  </Tag>
+                )}
               </button>
             );
           })}
         </div>
 
-        {/* Select + Button Row */}
+        {/* Select/Input + Button Row */}
         <Space.Compact style={{ width: "100%", display: "flex" }}>
-          <Select
-            value={selected}
-            onChange={setSelected}
-            options={selectOptions}
-            size="large"
-            style={{
-              flex: 1,
-            }}
-            placeholder="Select a question..."
-            showSearch
-            filterOption={(input, option) =>
-              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            }
-            popupMatchSelectWidth={false}
-            dropdownStyle={{
-              minWidth: "400px",
-              maxWidth: "600px",
-            }}
-          />
+          {isCustomMode ? (
+            <Input
+              value={customQuestion}
+              onChange={(e) => setCustomQuestion(e.target.value)}
+              placeholder="Enter your custom question here..."
+              size="large"
+              style={{
+                flex: 1,
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "14px",
+                fontWeight: 500,
+              }}
+              onPressEnter={onRun}
+            />
+          ) : (
+            <Select
+              value={selected}
+              onChange={setSelected}
+              options={selectOptions}
+              size="large"
+              style={{
+                flex: 1,
+              }}
+              placeholder="Select a question..."
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              popupMatchSelectWidth={false}
+              dropdownStyle={{
+                minWidth: "400px",
+                maxWidth: "600px",
+              }}
+            />
+          )}
 
           <Button
             type="primary"
@@ -181,7 +215,7 @@ export default function QuestionSelector({
         </Space.Compact>
 
         {/* Compact Selected Preview */}
-        {selected && (
+        {(selected || customQuestion) && (
           <div style={{
             marginTop: "12px",
             padding: "10px 12px",
@@ -193,10 +227,10 @@ export default function QuestionSelector({
             lineHeight: "1.5",
           }}>
             <span style={{ fontWeight: 600, color: "#9ca3af", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Selected:
+              {isCustomMode ? "Your Question:" : "Selected:"}
             </span>
             <div style={{ marginTop: "2px", fontWeight: 500, color: "#1f2937" }}>
-              {selected}
+              {isCustomMode ? customQuestion || "(empty)" : selected}
             </div>
           </div>
         )}

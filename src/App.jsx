@@ -42,6 +42,7 @@ const antdTheme = {
 
 export default function App() {
   const [selected, setSelected] = useState("");
+  const [customQuestion, setCustomQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [steps, setSteps] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -76,6 +77,11 @@ export default function App() {
       name: "Nhóm Câu hỏi What",
       questions: ["Tiên Nữ trao cái gì cho Arthur?"],
     },
+    {
+      name: "Custom Question",
+      questions: [], // Empty for custom input
+      isCustom: true,
+    },
   ];
 
   // Set first question as default
@@ -84,8 +90,12 @@ export default function App() {
   }, []);
 
   const questionToRun = useMemo(() => {
+    // If custom question is being used (selected is empty), use customQuestion
+    if (!selected.trim() && customQuestion.trim()) {
+      return customQuestion.trim();
+    }
     return selected.trim();
-  }, [selected]);
+  }, [selected, customQuestion]);
 
   const pipeline = useMemo(() => buildPipelineView(steps), [steps]);
 
@@ -197,6 +207,8 @@ export default function App() {
             questionGroups={questionGroups}
             selected={selected}
             setSelected={setSelected}
+            customQuestion={customQuestion}
+            setCustomQuestion={setCustomQuestion}
             onRun={run}
             loading={loading}
             questionToRun={questionToRun}
